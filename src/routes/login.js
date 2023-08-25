@@ -26,7 +26,8 @@ app.post('/v1/login', async (req, res) => {
         const tokenPayload = {
         //   id: user.id,
         //   role: user.role,
-          username: user.username 
+          username: user.username,
+          exp: Math.floor(Date.now() / 1000) + (60 * 30)  // exp in 30 min
         };
   
         const token = jwt.sign(tokenPayload, secretKey);
