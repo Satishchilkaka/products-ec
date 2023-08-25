@@ -13,28 +13,34 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 // Login route
 app.post('/v1/login', async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    await client.connect();
-    const db = client.db('users'); 
-    const usersCollection = db.collection('login'); 
-
-    const user = await usersCollection.findOne({ username, password });
-
-    if (user) {
-      const token = jwt.sign({ id: user.id, role: user.role }, secretKey);
-      res.json({ message: 'Login successful', token });
-    } else {
-      res.status(401).json({ message: 'Invalid credentials' });
+    const { username, password } = req.body;
+  
+    try {
+      await client.connect();
+      const db = client.db('users'); 
+      const usersCollection = db.collection('login'); 
+  
+      const user = await usersCollection.findOne({ username, password });
+  
+      if (user) {
+        const tokenPayload = {
+        //   id: user.id,
+        //   role: user.role,
+          username: user.username // Include the username in the token payload
+        };
+  
+        const token = jwt.sign(tokenPayload, secretKey);
+        res.json({ message: 'Login successful', token });
+      } else {
+        res.status(401).json({ message: 'Invalid credentials' });
+      }
+    } catch (error) {
+      console.error('Error connecting to MongoDB:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    } finally {
+      await client.close();
     }
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  } finally {
-    await client.close();
-  }
-});
+  });
 
 // Protected route
 app.get('/v1/protected', (req, res) => {
