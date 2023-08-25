@@ -26,7 +26,7 @@ app.post('/v1/login', async (req, res) => {
         const tokenPayload = {
         //   id: user.id,
         //   role: user.role,
-          username: user.username // Include the username in the token payload
+          username: user.username 
         };
   
         const token = jwt.sign(tokenPayload, secretKey);
