@@ -11,10 +11,21 @@ const secretKey = 'your-secret-key';
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+const Joi = require('joi');
+
+const loginSchema = Joi.object({
+  username: Joi.string().required(),
+  password: Joi.string().required(),
+});
+
 // Login route
 app.post('/v1/login', async (req, res) => {
     const { username, password } = req.body;
-  
+
+    const { error } = loginSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: 'Validation error', details: error.details });
+      }
     try {
       await client.connect();
       const db = client.db('users'); 
