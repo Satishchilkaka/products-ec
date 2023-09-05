@@ -32,12 +32,13 @@ app.post('/v1/login', async (req, res) => {
         const usersCollection = db.collection('login');
     
         const user = await usersCollection.findOne({ username, password });
-    
+        const expirationTimeInSeconds = Math.floor(Date.now() / 1000) + 60 * 5;
+
         if (user) {
           const tokenPayload = {
             username: user.username,
             profile: user.profile, 
-            exp: Math.floor(Date.now() / 1000) + 60 * 30, // exp in 30 minutes
+            exp: expirationTimeInSeconds // 5 min
           };
     
           const token = jwt.sign(tokenPayload, secretKey);
