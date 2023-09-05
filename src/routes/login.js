@@ -26,32 +26,32 @@ app.post('/v1/login', async (req, res) => {
     if (error) {
         return res.status(400).json({ message: 'Validation error', details: error.details });
       }
-    try {
-      await client.connect();
-      const db = client.db('users'); 
-      const usersCollection = db.collection('login'); 
-  
-      const user = await usersCollection.findOne({ username, password });
-  
-      if (user) {
-        const tokenPayload = {
-        //   id: user.id,
-        //   role: user.role,
-          username: user.username,
-          exp: Math.floor(Date.now() / 1000) + (60 * 30)  // exp in 30 min
-        };
-  
-        const token = jwt.sign(tokenPayload, secretKey);
-        res.json({ message: 'Login successful', token });
-      } else {
-        res.status(401).json({ message: 'Invalid credentials' });
+      try {
+        await client.connect();
+        const db = client.db('users');
+        const usersCollection = db.collection('login');
+    
+        const user = await usersCollection.findOne({ username, password });
+    
+        if (user) {
+          const tokenPayload = {
+            username: user.username,
+            profile: user.profile, 
+            exp: Math.floor(Date.now() / 1000) + 60 * 30, // exp in 30 minutes
+          };
+    
+          const token = jwt.sign(tokenPayload, secretKey);
+          res.json({ message: 'Login successful', token });
+        } else {
+          res.status(401).json({ message: 'Invalid credentials' });
+        }
+      } catch (error) {
+        console.error('Error connecting to MongoDB:', error);
+        res.status(500).json({ message: 'Internal server error' });
+      } finally {
+        await client.close();
       }
-    } catch (error) {
-      console.error('Error connecting to MongoDB:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    } finally {
-      await client.close();
-    }
+    
   });
 
 // Protected route
