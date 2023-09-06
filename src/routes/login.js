@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 app.use(bodyParser.json());
 
-const secretKey = 'your-secret-key';
+const secretKey = 'test';
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -28,8 +28,8 @@ app.post('/v1/login', async (req, res) => {
       }
       try {
         await client.connect();
-        const db = client.db('users');
-        const usersCollection = db.collection('login');
+        const db = client.db('products');
+        const usersCollection = db.collection('users');
     
         const user = await usersCollection.findOne({ username, password });
         const expirationTimeInSeconds = Math.floor(Date.now() / 1000) + 60 * 5;

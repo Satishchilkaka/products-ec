@@ -15,37 +15,133 @@
       "name": "Carrot",
       "category": "Vegetables",
       "price": 0.75,
-      "quantity": 40
+      "quantity": 30
     },
     {
       "name": "Milk",
       "category": "Dairy",
-      "price": 2.0,
+      "price": 2.5,
       "quantity": 20
+    },
+    {
+      "name": "Eggs",
+      "category": "Dairy",
+      "price": 2.0,
+      "quantity": 40
     },
     {
       "name": "Bread",
       "category": "Bakery",
-      "price": 2.5,
-      "quantity": 30
-    },
-    {
-      "name": "Chicken",
-      "category": "Meat",
-      "price": 5.0,
+      "price": 1.25,
       "quantity": 15
     },
     {
       "name": "Rice",
       "category": "Grains",
       "price": 3.0,
+      "quantity": 10
+    },
+    {
+      "name": "Pasta",
+      "category": "Grains",
+      "price": 1.5,
       "quantity": 25
+    },
+    {
+      "name": "Chicken",
+      "category": "Meat",
+      "price": 5.0,
+      "quantity": 8
     },
     {
       "name": "Salmon",
       "category": "Seafood",
-      "price": 7.0,
+      "price": 7.5,
+      "quantity": 12
+    },
+    {
+      "name": "Tomato",
+      "category": "Vegetables",
+      "price": 1.0,
+      "quantity": 35
+    },
+    {
+      "name": "Orange",
+      "category": "Fruits",
+      "price": 1.25,
+      "quantity": 40
+    },
+    {
+      "name": "Potato",
+      "category": "Vegetables",
+      "price": 0.5,
+      "quantity": 50
+    },
+    {
+      "name": "Cucumber",
+      "category": "Vegetables",
+      "price": 0.75,
+      "quantity": 20
+    },
+    {
+      "name": "Cheese",
+      "category": "Dairy",
+      "price": 3.0,
+      "quantity": 18
+    },
+    {
+      "name": "Yogurt",
+      "category": "Dairy",
+      "price": 1.5,
+      "quantity": 30
+    },
+    {
+      "name": "Steak",
+      "category": "Meat",
+      "price": 8.0,
       "quantity": 10
+    },
+    {
+      "name": "Spinach",
+      "category": "Vegetables",
+      "price": 1.0,
+      "quantity": 25
+    },
+    {
+      "name": "Broccoli",
+      "category": "Vegetables",
+      "price": 1.25,
+      "quantity": 22
+    },
+    {
+      "name": "Pineapple",
+      "category": "Fruits",
+      "price": 2.0,
+      "quantity": 16
+    },
+    {
+      "name": "Cereal",
+      "category": "Breakfast",
+      "price": 2.5,
+      "quantity": 28
+    },
+    {
+      "name": "Peanut Butter",
+      "category": "Condiments",
+      "price": 3.0,
+      "quantity": 15
+    },
+    {
+      "name": "Ketchup",
+      "category": "Condiments",
+      "price": 1.0,
+      "quantity": 40
+    },
+    {
+      "name": "Olive Oil",
+      "category": "Cooking Oils",
+      "price": 4.0,
+      "quantity": 14
     }
   ]
   
