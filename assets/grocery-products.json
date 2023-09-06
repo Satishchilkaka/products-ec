@@ -1,0 +1,51 @@
+[
+    {
+      "name": "Apple",
+      "category": "Fruits",
+      "price": 1.0,
+      "quantity": 50
+    },
+    {
+      "name": "Banana",
+      "category": "Fruits",
+      "price": 0.5,
+      "quantity": 75
+    },
+    {
+      "name": "Carrot",
+      "category": "Vegetables",
+      "price": 0.75,
+      "quantity": 40
+    },
+    {
+      "name": "Milk",
+      "category": "Dairy",
+      "price": 2.0,
+      "quantity": 20
+    },
+    {
+      "name": "Bread",
+      "category": "Bakery",
+      "price": 2.5,
+      "quantity": 30
+    },
+    {
+      "name": "Chicken",
+      "category": "Meat",
+      "price": 5.0,
+      "quantity": 15
+    },
+    {
+      "name": "Rice",
+      "category": "Grains",
+      "price": 3.0,
+      "quantity": 25
+    },
+    {
+      "name": "Salmon",
+      "category": "Seafood",
+      "price": 7.0,
+      "quantity": 10
+    }
+  ]
+  
