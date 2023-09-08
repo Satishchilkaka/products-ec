@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 app.use(bodyParser.json());
 
-const secretKey = 'test';
+const secretKey = 'test-secret';
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
