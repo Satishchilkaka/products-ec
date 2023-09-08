@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 app.use(bodyParser.json());
 
-const secretKey = 'test-secret';
+const secretKey = process.env.SECRET_KEY;
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -40,7 +40,6 @@ app.post('/v1/login', async (req, res) => {
             profile: user.profile, 
             exp: expirationTimeInSeconds // 5 min
           };
-    
           const token = jwt.sign(tokenPayload, secretKey);
           res.json({ message: 'Login successful', token });
         } else {
@@ -55,7 +54,7 @@ app.post('/v1/login', async (req, res) => {
     
   });
 
-// Protected route
+// example Protected route
 app.get('/v1/protected', (req, res) => {
   const token = req.headers.authorization;
 
