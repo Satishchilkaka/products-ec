@@ -30,7 +30,9 @@ function authenticateToken(req, res, next) {
   });
 }
 
-app.get('/v1/products', authenticateToken, async (req, res) => {
+app.get('/v1/products', async (req, res) => {
+// app.get('/v1/products', authenticateToken, async (req, res) => {
+
   try {
     await client.connect();
     const db = client.db('products');
