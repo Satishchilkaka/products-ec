@@ -3,31 +3,36 @@
       "name": "Apple",
       "category": "Fruits",
       "price": 1.0,
-      "quantity": 50
+      "quantity": 50,
+      "imageURL":"https://google.com/"
     },
     {
       "name": "Banana",
       "category": "Fruits",
       "price": 0.5,
-      "quantity": 75
+      "quantity": 75,
+      "imageURL":"https://google.com/"
     },
     {
       "name": "Carrot",
       "category": "Vegetables",
       "price": 0.75,
-      "quantity": 30
+      "quantity": 30,
+      "imageURL":"https://google.com/"
     },
     {
       "name": "Milk",
       "category": "Dairy",
       "price": 2.5,
-      "quantity": 20
+      "quantity": 20,
+      "imageURL":"https://google.com/"
     },
     {
       "name": "Eggs",
       "category": "Dairy",
       "price": 2.0,
-      "quantity": 40
+      "quantity": 40,
+      "imageURL":"https://google.com/"
     },
     {
       "name": "Bread",
@@ -39,13 +44,15 @@
       "name": "Rice",
       "category": "Grains",
       "price": 3.0,
-      "quantity": 10
+      "quantity": 10,
+      "imageURL":"https://google.com/"
     },
     {
       "name": "Pasta",
       "category": "Grains",
       "price": 1.5,
-      "quantity": 25
+      "quantity": 25,
+      "imageURL":"https://google.com/"
     },
     {
       "name": "Chicken",
