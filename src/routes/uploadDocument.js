@@ -30,7 +30,7 @@ const s3Storage = multerS3({
 
 
 const fileFilter = (req, file, cb) => {
-  const allowedExtensions = ['.pdf', '.jpeg', '.jpg', '.png', '.doc', '.docx'];
+  const allowedExtensions = ['.pdf', '.jpeg', '.jpg', '.png', '.doc', '.docx, .txt, .zip'];
   const extname = path.extname(file.originalname).toLowerCase();
   if (allowedExtensions.includes(extname)) {
     cb(null, true);
