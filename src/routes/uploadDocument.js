@@ -39,15 +39,19 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({ storage: s3Storage, fileFilter: fileFilter });
-
 app.post('/v1/upload-document', upload.single('file'), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
-  }
-
-  const uploadedFileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${req.file.key}`;
-  res.send('File uploaded successfully');
-});
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+  
+    if (!req.body.category) {
+      return res.status(400).send('Category is mandatory.');
+    }
+  
+    const uploadedFileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${req.file.key}`;
+    res.send('File uploaded successfully');
+  });
+  
 
 // update the document name
 app.put('/v1/update-document/:key', async (req, res) => {
