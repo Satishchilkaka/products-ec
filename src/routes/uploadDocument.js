@@ -8,6 +8,15 @@ const path = require("path");
 
 const app = express();
 
+const { MongoClient } = require('mongodb');
+
+
+const secretKey = process.env.SECRET_KEY;
+
+console.log('secretKey', secretKey)
+const uri = process.env.MONGODB_URI;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -41,51 +50,99 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage: s3Storage, fileFilter: fileFilter });
 app.post('/v1/upload-document', upload.single('file'), async (req, res) => {
     if (!req.file) {
-      return res.status(400).send('No file uploaded.');
+        return res.status(400).send('No file uploaded.');
     }
-  
+
     if (!req.body.category) {
-      return res.status(400).send('Category is mandatory.');
+        return res.status(400).send('Category is mandatory.');
     }
-  
+
     const uploadedFileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${req.file.key}`;
-    res.send('File uploaded successfully');
-  });
+
+    const document = {
+        name: req.file.originalname, 
+        category: req.body.category,
+        imageURL: uploadedFileUrl,
+    };
+
+    try {
+        // Insert the document metadata into MongoDB.
+        const db = client.db('users_documents');
+        const productsCollection = db.collection('documents');
+        const result = await productsCollection.insertOne(document);
+        console.log(result);
+
+        if (result !== 0) {
+            res.send('File uploaded successfully');
+        } else {
+            console.error('Failed to insert document metadata into MongoDB');
+            res.status(500).send('Failed to store document metadata.');
+        }
+    } catch (error) {
+        console.error('Error storing document metadata in MongoDB:', error);
+        res.status(500).send('Error storing document metadata.');
+    }
+});
+
   
 
 // update the document name
+
+
+
 app.put('/v1/update-document/:key', async (req, res) => {
     const { key } = req.params;
     const { newDocumentName } = req.body;
-  
+
     if (!newDocumentName) {
-      return res.status(400).json({ error: "New document name is required." });
+        return res.status(400).json({ error: "New document name is required." });
     }
-  
+
     const originalFileExtension = path.extname(key);
     const newKey = newDocumentName + originalFileExtension;
-  
+
     try {
-      const copyObjectParams = {
-        CopySource: `${process.env.AWS_BUCKET_NAME}/${key}`,
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: newKey,
-      };
-      await s3Client.send(new CopyObjectCommand(copyObjectParams));
-  
-      const deleteObjectParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: key,
-      };
-      await s3Client.send(new DeleteObjectCommand(deleteObjectParams));
-  
-      res.status(200).json({ message: "Document updated successfully." });
+        // Update the document name and imageURL in MongoDB.
+        const db = client.db('users_documents');
+        const productsCollection = db.collection('documents');
+
+        // Find the document by its imageURL, assuming imageURL is unique.
+        const document = await productsCollection.findOne({ imageURL: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}` });
+
+        if (document) {
+            // Update document name and imageURL.
+            document.name = newDocumentName;
+            document.imageURL = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${newKey}`;
+            
+            // Save the updated document back to MongoDB.
+            const result = await productsCollection.updateOne({ imageURL: document.imageURL }, { $set: document });
+            if (result.modifiedCount === 1) {
+                // Rename the file in AWS S3.
+                const copyObjectParams = {
+                    CopySource: `${process.env.AWS_BUCKET_NAME}/${key}`,
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: newKey,
+                };
+                await s3Client.send(new CopyObjectCommand(copyObjectParams));
+
+                const deleteObjectParams = {
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: key,
+                };
+                await s3Client.send(new DeleteObjectCommand(deleteObjectParams));
+
+                res.status(200).json({ message: "Document updated successfully." });
+            } else {
+                res.status(500).json({ error: "Failed to update the document in MongoDB." });
+            }
+        } else {
+            res.status(404).json({ error: "Document not found in MongoDB." });
+        }
     } catch (error) {
-      console.error("Error updating document:", error);
-      res.status(400).json({ error: "Failed to update the document." });
+        console.error("Error updating document:", error);
+        res.status(400).json({ error: "Failed to update the document." });
     }
-  });
-  
+});
 
 //  delete the document
 app.delete('/v1/delete-document/:key', async (req, res) => {
