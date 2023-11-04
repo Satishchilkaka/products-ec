@@ -88,49 +88,33 @@ app.post('/v1/upload-document', upload.single('file'), async (req, res) => {
 
 // update the document name
 
+const { ObjectId } = require('mongodb');
 
 
-app.put('/v1/update-document/:key', async (req, res) => {
-    const { key } = req.params;
+app.put('/v1/update-document/:id', async (req, res) => {
+    const { id } = req.params;
     const { newDocumentName } = req.body;
 
     if (!newDocumentName) {
         return res.status(400).json({ error: "New document name is required." });
     }
 
-    const originalFileExtension = path.extname(key);
-    const newKey = newDocumentName + originalFileExtension;
-
     try {
-        // Update the document name and imageURL in MongoDB.
+        // Update the document name in MongoDB.
         const db = client.db('users_documents');
         const productsCollection = db.collection('documents');
 
-        // Find the document by its imageURL, assuming imageURL is unique.
-        const document = await productsCollection.findOne({ imageURL: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}` });
+        // Find the document by its ID.
+        const document = await productsCollection.findOne({ _id: new ObjectId(id) });
 
         if (document) {
-            // Update document name and imageURL.
+            // Update the document name.
             document.name = newDocumentName;
-            document.imageURL = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${newKey}`;
-            
+
             // Save the updated document back to MongoDB.
-            const result = await productsCollection.updateOne({ imageURL: document.imageURL }, { $set: document });
+            const result = await productsCollection.updateOne({ _id: new ObjectId(id) }, { $set: document });
+            
             if (result.modifiedCount === 1) {
-                // Rename the file in AWS S3.
-                const copyObjectParams = {
-                    CopySource: `${process.env.AWS_BUCKET_NAME}/${key}`,
-                    Bucket: process.env.AWS_BUCKET_NAME,
-                    Key: newKey,
-                };
-                await s3Client.send(new CopyObjectCommand(copyObjectParams));
-
-                const deleteObjectParams = {
-                    Bucket: process.env.AWS_BUCKET_NAME,
-                    Key: key,
-                };
-                await s3Client.send(new DeleteObjectCommand(deleteObjectParams));
-
                 res.status(200).json({ message: "Document updated successfully." });
             } else {
                 res.status(500).json({ error: "Failed to update the document in MongoDB." });
@@ -143,6 +127,9 @@ app.put('/v1/update-document/:key', async (req, res) => {
         res.status(400).json({ error: "Failed to update the document." });
     }
 });
+
+
+
 
 //  delete the document
 app.delete('/v1/delete-document/:key', async (req, res) => {
