@@ -9,7 +9,7 @@ const path = require("path");
 const app = express();
 
 const { MongoClient } = require('mongodb');
-
+const { ObjectId } = require('mongodb');
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -50,45 +50,43 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage: s3Storage, fileFilter: fileFilter });
 app.post('/v1/upload-document', upload.single('file'), async (req, res) => {
     if (!req.file) {
-        return res.status(400).send('No file uploaded.');
+      return res.status(400).send('No file uploaded.');
     }
-
+  
     if (!req.body.category) {
-        return res.status(400).send('Category is mandatory.');
+      return res.status(400).send('Category is mandatory.');
     }
-
+  
     const uploadedFileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${req.file.key}`;
-
+  
     const document = {
-        name: req.file.originalname, 
-        category: req.body.category,
-        imageURL: uploadedFileUrl,
+      name: req.file.originalname,
+      category: req.body.category,
+      imageURL: uploadedFileUrl,
+      uploadDate: new Date(),
     };
-
+  
     try {
-        // Insert the document metadata into MongoDB.
-        const db = client.db('users_documents');
-        const productsCollection = db.collection('documents');
-        const result = await productsCollection.insertOne(document);
-        console.log(result);
-
-        if (result !== 0) {
-            res.send('File uploaded successfully');
-        } else {
-            console.error('Failed to insert document metadata into MongoDB');
-            res.status(500).send('Failed to store document metadata.');
-        }
+      // Insert the document metadata into MongoDB.
+      const db = client.db('users_documents');
+      const productsCollection = db.collection('documents');
+      const result = await productsCollection.insertOne(document);
+  
+      if (result !== 0) {
+        res.send('File uploaded successfully');
+      } else {
+        console.error('Failed to insert document metadata into MongoDB');
+        res.status(500).send('Failed to store document metadata.');
+      }
     } catch (error) {
-        console.error('Error storing document metadata in MongoDB:', error);
-        res.status(500).send('Error storing document metadata.');
+      console.error('Error storing document metadata in MongoDB:', error);
+      res.status(500).send('Error storing document metadata.');
     }
-});
-
+  });
   
 
 // update the document name
 
-const { ObjectId } = require('mongodb');
 
 
 app.put('/v1/update-document/:id', async (req, res) => {
