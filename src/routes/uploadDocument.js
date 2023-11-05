@@ -108,7 +108,6 @@ app.put('/v1/update-document/:id', async (req, res) => {
         const document = await productsCollection.findOne({ _id: new ObjectId(id) });
 
         if (document) {
-            // Update the document name.
             document.name = newDocumentName;
 
             // Save the updated document back to MongoDB.
@@ -132,22 +131,41 @@ app.put('/v1/update-document/:id', async (req, res) => {
 
 
 //  delete the document
-app.delete('/v1/delete-document/:key', async (req, res) => {
-  const { key } = req.params;
+app.delete('/v1/delete-document/:id', async (req, res) => {
+    const { id } = req.params;
 
-  try {
-    const deleteObjectParams = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: key,
-    };
-    await s3Client.send(new DeleteObjectCommand(deleteObjectParams));
+    try {
+        const db = client.db('users_documents');
+        const productsCollection = db.collection('documents');
 
-    res.status(200).json({ message: "Document deleted successfully." });
-  } catch (error) {
-    console.error("Error deleting document:", error);
-    res.status(400).json({ error: "Failed to delete the document." });
-  }
+        // Find the document by its ID.
+        const document = await productsCollection.findOne({ _id: new ObjectId(id) });
+
+        if (document) {
+            // Delete the document in MongoDB.
+            const result = await productsCollection.deleteOne({ _id: new ObjectId(id) });
+
+            if (result.deletedCount === 1) {
+                // Delete the file from AWS S3.
+                const deleteObjectParams = {
+                    Bucket: process.env.AWS_BUCKET_NAME,
+                    Key: document.name,
+                };
+                await s3Client.send(new DeleteObjectCommand(deleteObjectParams));
+
+                res.status(200).json({ message: "Document deleted successfully." });
+            } else {
+                res.status(500).json({ error: "Failed to delete the document in MongoDB." });
+            }
+        } else {
+            res.status(404).json({ error: "Document not found in MongoDB." });
+        }
+    } catch (error) {
+        console.error("Error deleting document:", error);
+        res.status(400).json({ error: "Failed to delete the document." });
+    }
 });
+
 
 module.exports = app;
 
